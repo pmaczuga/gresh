@@ -1,0 +1,18 @@
+[project]
+name = "pygresh"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jax>=0.10.1",
+    "pytest>=9.0.3",
+    "ruff>=0.15.15",
+    "rustworkx>=0.17.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+]
