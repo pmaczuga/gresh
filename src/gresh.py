@@ -438,7 +438,7 @@ class Gresh:
         node_data = self.graph.get_node_data(v)
         if not isinstance(node_data, VertexData):
             raise TypeError(
-                f"Trying to get VertexData from node of type {node_data.type}"
+                f"Trying to get VertexData from node of type {node_data.type()}"
             )
         return node_data
 
@@ -446,7 +446,7 @@ class Gresh:
         node_data = self.graph.get_node_data(v)
         if not isinstance(node_data, HangingData):
             raise TypeError(
-                f"Trying to get HangingData from node of type {node_data.type}"
+                f"Trying to get HangingData from node of type {node_data.type()}"
             )
         return node_data
 
@@ -454,7 +454,7 @@ class Gresh:
         node_data = self.graph.get_node_data(v)
         if not isinstance(node_data, InteriorData):
             raise TypeError(
-                f"Trying to get InteriorData from node of type {node_data.type}"
+                f"Trying to get InteriorData from node of type {node_data.type()}"
             )
         return node_data
 
