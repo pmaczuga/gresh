@@ -1,0 +1,1 @@
+[![build](https://github.com/pmaczuga/gresh/actions/workflows/build.yaml/badge.svg)](https://github.com/pmaczuga/gresh/actions/workflows/build.yaml)
