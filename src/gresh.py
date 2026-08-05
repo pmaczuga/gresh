@@ -247,9 +247,13 @@ class Gresh:
     def __str__(self):
         vs = self.vertex_count()
         ins = self.interior_count()
-        es = self.graph.num_edges()
+        es = self.graph.num_edges() - ins * 3  # only real edges
+        hs = self.hanging_count()
         g_type = type(self).__name__
-        return f"{g_type} with ({vs} vertices), ({ins} interiors) and ({es} edges)"
+        string = f"{g_type} with ({vs} vertices), ({ins} interiors) and ({es} edges)"
+        if hs:
+            string += f" that has !{hs} hanging nodes!"
+        return string
 
     # -----------------------------------------------------------------------------
     # ------ Methods for adding and removing vertices and edges -------------------
@@ -315,7 +319,10 @@ class Gresh:
         return id
 
     def add_edge(self, n1: int, n2: int, boundary: bool = False):
-        "Add edge between nodes `n1` and `n2`. Set `boundary` flag if delivered."
+        """
+        Add edge between nodes `n1` and `n2`. Set `boundary` flag if delivered.
+        If edge already exists the flag will be updated.
+        """
         data = EdgeData(boundary)
         e = self.graph.add_edge(n1, n2, data)
         return e
@@ -323,9 +330,9 @@ class Gresh:
     def remove_node(self, n: int):
         "Remove node `n` of any type from graph."
         data = self.graph.get_node_data(n)
-        if data.type == NodeType.VERTEX:
-            self._vertex_count = -1
-        elif data.type == NodeType.HANGING:
+        if data.type() == NodeType.VERTEX:
+            self._vertex_count -= 1
+        elif data.type() == NodeType.HANGING:
             self._hanging_count -= 1
         else:
             self._interior_count -= 1
@@ -438,7 +445,7 @@ class Gresh:
         node_data = self.graph.get_node_data(v)
         if not isinstance(node_data, VertexData):
             raise TypeError(
-                f"Trying to get VertexData from node of type {node_data.type()}"
+                f"Trying to get VertexData from node of type {node_data.type().name}"
             )
         return node_data
 
@@ -446,7 +453,7 @@ class Gresh:
         node_data = self.graph.get_node_data(v)
         if not isinstance(node_data, HangingData):
             raise TypeError(
-                f"Trying to get HangingData from node of type {node_data.type()}"
+                f"Trying to get HangingData from node of type {node_data.type().name}"
             )
         return node_data
 
@@ -454,7 +461,7 @@ class Gresh:
         node_data = self.graph.get_node_data(v)
         if not isinstance(node_data, InteriorData):
             raise TypeError(
-                f"Trying to get InteriorData from node of type {node_data.type()}"
+                f"Trying to get InteriorData from node of type {node_data.type().name}"
             )
         return node_data
 

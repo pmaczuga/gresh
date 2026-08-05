@@ -1,8 +1,10 @@
 from typing import override
 
 import numpy as np
+import pytest
 
 from src.gresh import AddVertexStrategy, Gresh, NodeType
+from src.types import Vector3
 
 
 def test_add_xyz():
@@ -40,6 +42,14 @@ def test_elevation():
     assert g.get_elevation(id) == 10
 
 
+def test_elevation_add_uve():
+    g = Gresh(AddVertexStrategy.USE_UVE)
+    id = g.add_vertex(np.array([1, 2, 3]))
+    assert g.get_elevation(id) == 3
+    g.set_elevation(id, 10)
+    assert g.get_elevation(id) == 10
+
+
 def test_custom_converter_xyz():
     class CustomGresh(Gresh):
         @override
@@ -66,3 +76,13 @@ def test_custom_converter_uve():
     assert (g.uv(id) == np.array([4, 5])).all()
     assert (g.uve(id) == np.array([4, 5, 6])).all()
     assert (g.get_elevation(id) == 6).all()
+
+
+def test_remove_vertex():
+    g = Gresh()
+    id = g.add_vertex(Vector3(1, 2, 3))
+    assert g.vertex_count() == 1
+    g.remove_node(id)
+    assert g.vertex_count() == 0
+    with pytest.raises(IndexError):
+        g.get_type(0)

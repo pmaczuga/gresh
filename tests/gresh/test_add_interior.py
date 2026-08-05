@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from src.gresh import AddVertexStrategy, Gresh, NodeType
 
@@ -61,3 +62,16 @@ def test_interior_connectivity():
     v3 = g.add_vertex(np.array([1, 1, 0]))
     i1 = g.add_interior(v1, v2, v3)
     assert set(g.interior_connectivity(i1)) == set([v1, v2, v3])
+
+
+def test_remove_interior():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([2, 0, 0]))
+    v3 = g.add_vertex(np.array([1, 1, 0]))
+    i1 = g.add_interior(v1, v2, v3)
+    assert g.interior_count() == 1
+    g.remove_node(i1)
+    assert g.interior_count() == 0
+    with pytest.raises(IndexError):
+        g.get_type(i1)

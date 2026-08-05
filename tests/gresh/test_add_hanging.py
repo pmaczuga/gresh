@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from src.gresh import AddVertexStrategy, Gresh, NodeType
 
@@ -12,6 +13,34 @@ def test_graph_properties():
     assert g.vertex_count() == 2
     assert g.interior_count() == 0
     assert g.hanging_count() == 1
+
+
+def test_has_hanging_nodes():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([2, 0, 0]))
+    assert not g.has_hanging_nodes()
+    g.add_hanging(np.array([1, 0, 0]), v1, v2)
+    assert g.has_hanging_nodes()
+
+
+def test_unset_hanging():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([2, 0, 0]))
+    h = g.add_hanging(np.array([1, 0, 0]), v1, v2)
+    g.unset_hanging(h)
+    assert not g.has_hanging_nodes()
+
+
+def test_unset_non_hanging():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([2, 0, 0]))
+    g.add_hanging(np.array([1, 0, 0]), v1, v2)
+    g.unset_hanging(v1)
+    assert not g.is_hanging(v1)
+    assert g.has_hanging_nodes()
 
 
 def test_coords():
@@ -68,6 +97,17 @@ def test_get_hanging_node_not_exists():
     assert g.get_hanging_node_between(v1, v2) is None
 
 
+def test_get_hanging_node_not_exists_no_common_edge():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([1, 0, 0]))
+    v3 = g.add_vertex(np.array([2, 0, 0]))
+    v4 = g.add_vertex(np.array([1, 1, 0]))
+    g.add_interior(v1, v2, v4)
+    g.add_interior(v2, v3, v4)
+    assert g.get_hanging_node_between(v1, v3) is None
+
+
 def test_get_hanging_node_with_two_of_them():
     g = Gresh(AddVertexStrategy.USE_XYZ)
     v1 = g.add_vertex(np.array([0, 0, 0]))
@@ -88,3 +128,15 @@ def test_get_hanging_node_with_two_of_them():
     g.add_edge(v4, v5)
     g.add_edge(v5, v3)
     assert g.get_hanging_node_between(v1, v2) == h6
+
+
+def test_remove_hanging():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([2, 0, 0]))
+    h = g.add_hanging(np.array([1, 0, 0]), v1, v2)
+    assert g.hanging_count() == 1
+    g.remove_node(h)
+    assert g.hanging_count() == 0
+    with pytest.raises(IndexError):
+        g.get_type(h)

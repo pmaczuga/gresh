@@ -37,3 +37,13 @@ def test_edge_length():
     v2 = g.add_vertex(np.array([1, 0, 0]))
     g.add_edge(v1, v2)
     assert g.distance(v1, v2) == 1.0
+
+
+def test_remove_edge():
+    g = Gresh(AddVertexStrategy.USE_XYZ)
+    v1 = g.add_vertex(np.array([0, 0, 0]))
+    v2 = g.add_vertex(np.array([1, 0, 0]))
+    g.add_edge(v1, v2)
+    assert g.has_edge(v1, v2)
+    g.remove_edge(v1, v2)
+    assert not g.has_edge(v1, v2)
