@@ -1,1 +1,2 @@
 [![build](https://github.com/pmaczuga/gresh/actions/workflows/build.yaml/badge.svg)](https://github.com/pmaczuga/gresh/actions/workflows/build.yaml)
+[![coverage](https://github.com/pmaczuga/gresh/blob/badges/coverage.svg)](https://github.com/pmaczuga/gresh/actions/workflows/build.yaml)
